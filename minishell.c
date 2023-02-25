@@ -6,13 +6,13 @@
 /*   By: smounafi <smounafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/18 18:02:04 by smounafi          #+#    #+#             */
-/*   Updated: 2023/02/24 23:38:35 by smounafi         ###   ########.fr       */
+/*   Updated: 2023/02/25 23:37:51 by smounafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	count_word(char *str)
+int	ft_count_word(char *str)
 {
 	int	i;
 	int	j;
@@ -45,61 +45,18 @@ char	*fill_word(char *str)
 {
 	int		j;
 	int		i;
-	int		x;
-	int		y;
 	char	*s1;
-	// char	*s2 = NULL;
 	
 	i = 0;
 	j = 0;
-	x = 0;
-	y = 0;
 	if(str[j] == 34 || str[j] == 39)
 	{
 		j++;
 		while(str[j] != 34 && str[j] != 39)
 			j++;
-		if(str[j + 1] != ' ')
-		{
-			while(str[j] != ' ')
-			{
-				j++;
-			}
-		}
 	}
-	/***********************************/
-	// else if(str[j] == '$')
-	// {
-	// 	j++;
-	// 	x = j;
-	// 	while(str[x] != ' ')
-	// 		x++;
-	// 	s2 = malloc(x + 1);
-	// 	while(str[j] != ' ')
-	// 	{
-	// 		s2[y] = str[j];
-	// 		j++;
-	// 		y++;
-	// 	}
-	// 	printf("**%s**\n", s2);
-	// 	// while(getenv(str) != ' ')
-	// 	// 	j++;
-	// 	// j--;
-	// 	// while(x < j)
-	// 	// {
-	// 	// 	s2[x] = str[x + 1];
-	// 	// 	x++;
-	// 	// }
-	// 	// s2[x] = '\0';
-	// 	// s2 = getenv(s2);
-	// 	// str = s2;
-	// 	//printf("**** %d ****\n", j);
-	// }
-	/***********************************/
-	else
-		while (str[j] && str[j] != ' ' && str[j] != '\t' && str[j] != '\n')
-			j++;
-	j += 1;
+	while (str[j] && str[j] != ' ' && str[j] != '\t' && str[j] != '\n')
+		j++;
 	s1 = malloc(j + 1);
 	while (i < j)
 	{
@@ -110,18 +67,30 @@ char	*fill_word(char *str)
 	return (s1);
 }
 
+// void skip_single_double_quotes(char *str)
+// {
+// 	while(*str != 34 && *str != 39)
+// 		str++;
+// 	str++;
+// 	if (*str != ' ')
+// 	{
+// 		while(*str != ' ')
+// 		{
+// 			str++;
+// 		}
+// 	}
+// }
+
 char	**ft_split(char *str)
 {
-	int		x;
 	int		i;
 	char	**split;
-	int		b;
+	int		count;
 
 	i = 0;
-	x = 0;
-	b = count_word(str);
-	split = malloc((sizeof(char *) * (b + 1)));
-	while (*str && i < b)
+	count = ft_count_word(str);
+	split = malloc((sizeof(char *) * (count + 1)));
+	while (*str && i < count)
 	{
 		while (*str == ' ' || *str == '\t' || *str == '\n')
 			str++;
@@ -142,10 +111,8 @@ char	**ft_split(char *str)
 			}
 		}
 		else
-		{
 			while (*str != ' ' && *str != '\t' && *str != '\n')
 				str++;
-		}
 	}
 	split[i] = 0;
 	return (split);
@@ -218,7 +185,7 @@ char	*ft_substr(char *s, unsigned int start, size_t len)
 	if (!s)
 		return (0);
 	if (start >= ft_strlen(s))
-		return (calloc(1, 1));
+		return (ft_calloc(1, 1));
 	if (len > ft_strlen(s))
 		len = ft_strlen(s);
 	p = (char *)malloc(len + 1);
@@ -234,53 +201,7 @@ char	*ft_substr(char *s, unsigned int start, size_t len)
 	return (p);
 }
 
-int inter(char *s1, char *s2)
-{
-	int i;
-	int j;
-	size_t res;
-	
-	i = 0;
-	j = 0;
-	res = 0;
-	while(s1[i] && s2[j])
-	{
-		if(s1[i] == s2[j])
-			res++;
-		if(res == ft_strlen(s1) - 1)
-			return(1);
-		i++;
-		j++;
-	}
-	return(0);
-}
-
-// char *get_environment(char *splitted_str, char **env)
-// {
-// 	int w;
-// 	int x;
-// 	int y;
-	
-// 	w = 0;
-// 	x = 0;
-// 	y = 0;
-// 	splitted_str++; // escape $ in the splitted string
-// 	while(env[y])
-// 	{
-// 		if(inter(splitted_str, env[y]))
-// 		{
-// 			while(*env[y] != '=')
-// 				env[y]++;
-// 			env[y]++; // escape = 
-// 			splitted_str = env[y];
-// 			break;
-// 		}
-// 		y++;
-// 	}
-// 	return splitted_str;
-// }
-
-char *get_environment(char *splitted_str, char **env)
+char *ft_get_environment(char *splitted_str, char **env)
 {
 	char *envirement;
     int i;
@@ -291,7 +212,7 @@ char *get_environment(char *splitted_str, char **env)
     count = 0;
     i = 0;
     envirement = ft_calloc(1,1);
-    while (env[i] != NULL)
+    while (env[i])
     {
         j = 0;
         while (splitted_str[j]  &&  env[i][j] != '=' )
@@ -313,7 +234,8 @@ char *get_environment(char *splitted_str, char **env)
         return ("\0");
     return(envirement);
 }
-char **search_in_splitted_str(char **splitted_str, char **env)
+
+char **ft_search_in_splitted_str(char **splitted_str, char **env)
 {
 	int x;
 	int y;
@@ -328,9 +250,17 @@ char **search_in_splitted_str(char **splitted_str, char **env)
 			{
 				x++;
 				if(x == 1)
-					splitted_str[y] = get_environment(splitted_str[y] + x, env);
+				{
+					// printf("STR 1 = %s\n",splitted_str[y]);
+					// printf("ENV 1 = %s\n", get_environment(splitted_str[y] + x, env));
+					splitted_str[y] = ft_get_environment(splitted_str[y] + x, env);
+				}
 				else if(x > 1)
-				 	splitted_str[y] = ft_strjoin(ft_substr(splitted_str[y], 0, x - 1), get_environment(splitted_str[y] + x - 1, env));
+				{
+					// printf("STR 2 = %s\n",splitted_str[y]);
+					// printf("ENV 2 = %s\n", get_environment(splitted_str[y], env));
+				 	splitted_str[y] = ft_strjoin(ft_substr(splitted_str[y], 0, x - 1), ft_get_environment(splitted_str[y] + x - 1, env));
+				}
 			}
 			x++;
 		}
@@ -339,27 +269,152 @@ char **search_in_splitted_str(char **splitted_str, char **env)
 	return splitted_str;
 }
 
+char *ft_convert_2d_to_str(char **splited_string)
+{
+	int y;
+	char *str;
+
+	y = 0;
+	str = ft_calloc(1,1);
+	while(splited_string[y])
+	{
+		str = ft_strjoin(str, splited_string[y]);
+		str = ft_strjoin(str, "#");
+		y++;
+	}
+	str[ft_strlen(str)] = '\0';
+	return(str);
+}
+
+int	ft_count_word_for_str(char *str)
+{
+	int	i;
+	int	j;
+	int	count;
+
+	i = 0;
+	j = 0;
+	count = 0;
+	while (str[i])
+	{
+		if(j == 0 && str[i] != '#')
+		{
+			j = 1;
+			count++;
+		}
+		else if (j == 1 && str[i] == '#')
+			j = 0;
+		i++;
+	}
+	return (count);
+}
+
+char	*fill_word_for_str(char *str)
+{
+	int		j;
+	int		i;
+	char	*s1;
+	
+	i = 0;
+	j = 0;
+	while (str[j] && str[j] != '#')
+		j++;
+	s1 = malloc(j + 1);
+	while (i < j)
+	{
+		s1[i] = str[i];
+		i++;
+	}
+	s1[i] = '\0';
+	return (s1);
+}
+
+char	**ft_split_with_special_chars(char *str)
+{
+	int		i;
+	char	**split;
+	int		count;
+	
+	i = 0;
+	count = ft_count_word_for_str(str);
+	split = malloc(sizeof(char *) * (count + 1));
+	printf("count %d\n", count);
+	while (*str && i < count)
+	{
+		while (*str == '#')
+			str++;
+		split[i] = fill_word_for_str(str);
+		i++;
+		while (*str != '#')
+			str++;
+	}
+	split[i] = 0;
+	return (split);
+}
+
+/*           HANDLE SPLIT WITH | < > << >>            */
+
 int main(int ac, char **av, char **env)
 {
 	(void)ac;
 	(void)av;
     char *input;
     char **splited_string;
+    char *splited_str;
 	int count;
 	int i;
+	int j;
 
     i = 0;
+    j = 0;
 	count = 0;	
     input = readline("> ");
-	count = count_word(input);
+	count = ft_count_word(input);
     //add_history(input);
     splited_string = ft_split(input);
-    splited_string = search_in_splitted_str(splited_string, env);
+    splited_string = ft_search_in_splitted_str(splited_string, env);
     while(i < count)
     {
         printf("-- %s\n", splited_string[i]);
         i++;
     }
+	splited_str = ft_convert_2d_to_str(splited_string);
+    printf("-- %s\n", splited_str);
+	splited_string = ft_split_with_special_chars(splited_str);
+	while(j < count)
+    {
+        printf("-- %s\n", splited_string[j]);
+        j++;
+    }
     free(input);
     return 0;
 }
+
+
+
+
+
+
+
+
+
+// int pipe_index;
+// int left_redir_index;
+// int right_redir_index;
+// int left_herdoc_index;
+// int right_herdoc_index;
+// pipe_index = 0;
+// left_redir_index = 0;
+// right_redir_index = 0;
+// left_herdoc_index = 0;
+// right_herdoc_index = 0;
+// if(str[i] == '|')
+// 	pipe_index = i;
+// if(str[i] == '<')
+// 	left_redir_index = i;
+// if(str[i] == '>')
+// 	right_redir_index = i;
+// if(str[i] == '<<')
+// 	left_herdoc_index = i;
+// if(str[i] == '>>')
+// 	right_herdoc_index = i;
