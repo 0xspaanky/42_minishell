@@ -6,200 +6,11 @@
 /*   By: smounafi <smounafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/18 18:02:04 by smounafi          #+#    #+#             */
-/*   Updated: 2023/02/25 23:37:51 by smounafi         ###   ########.fr       */
+/*   Updated: 2023/02/26 17:20:16 by smounafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-int	ft_count_word(char *str)
-{
-	int	i;
-	int	j;
-	int	count;
-
-	i = 0;
-	j = 0;
-	count = 0;
-	while (str[i])
-	{
-		if(str[i] == 34 || str[i] == 39)
-		{
-			i++;
-			while(str[i] != 34 && str[i] != 39)
-				i++;
-		}
-		if(j == 0 && str[i] != ' ' && str[i] != '\t' && str[i] != '\n')
-		{
-			j = 1;
-			count++;
-		}
-		else if (j == 1 && (str[i] == ' ' || str[i] == '\t' || str[i] == '\n'))
-			j = 0;
-		i++;
-	}
-	return (count);
-}
-
-char	*fill_word(char *str)
-{
-	int		j;
-	int		i;
-	char	*s1;
-	
-	i = 0;
-	j = 0;
-	if(str[j] == 34 || str[j] == 39)
-	{
-		j++;
-		while(str[j] != 34 && str[j] != 39)
-			j++;
-	}
-	while (str[j] && str[j] != ' ' && str[j] != '\t' && str[j] != '\n')
-		j++;
-	s1 = malloc(j + 1);
-	while (i < j)
-	{
-		s1[i] = str[i];
-		i++;
-	}
-	s1[i] = '\0';
-	return (s1);
-}
-
-// void skip_single_double_quotes(char *str)
-// {
-// 	while(*str != 34 && *str != 39)
-// 		str++;
-// 	str++;
-// 	if (*str != ' ')
-// 	{
-// 		while(*str != ' ')
-// 		{
-// 			str++;
-// 		}
-// 	}
-// }
-
-char	**ft_split(char *str)
-{
-	int		i;
-	char	**split;
-	int		count;
-
-	i = 0;
-	count = ft_count_word(str);
-	split = malloc((sizeof(char *) * (count + 1)));
-	while (*str && i < count)
-	{
-		while (*str == ' ' || *str == '\t' || *str == '\n')
-			str++;
-		split[i] = fill_word(str);
-		i++;
-		if(*str == 34 || *str == 39)
-		{
-			str++;
-			while(*str != 34 && *str != 39)
-				str++;
-			str++;
-			if (*str != ' ')
-			{
-				while(*str != ' ')
-				{
-					str++;
-				}
-			}
-		}
-		else
-			while (*str != ' ' && *str != '\t' && *str != '\n')
-				str++;
-	}
-	split[i] = 0;
-	return (split);
-}
-
-void	*ft_calloc(size_t count, size_t size)
-{
-	char	*ptr;
-	size_t	i;
-
-	i = 0;
-	if (count && size == SIZE_MAX / count)
-		return (0);
-	ptr = (char *)malloc(count * size);
-	if (!ptr)
-		return (0);
-	while (i < count * size)
-	{
-		ptr[i] = '\0';
-		i++;
-	}
-	return (ptr);
-}
-
-size_t	ft_strlen(const char *s)
-{
-	size_t	i;
-
-	i = 0;
-	while (s[i] != '\0')
-	{
-		i++;
-	}
-	return (i);
-}
-
-char	*ft_strjoin(char *s1, char *s2)
-{
-	char	*p;
-	size_t	i;
-	size_t	j;
-
-	if (!s1 || !s2)
-		return (NULL);
-	p = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
-	if (!p)
-		return (NULL);
-	i = -1;
-	while (s1[++i])
-	{
-		if (i <= ft_strlen(s1))
-			p[i] = s1[i];
-	}
-	j = -1;
-	while (s2[++j])
-	{
-		if (i < ft_strlen(s1) + ft_strlen(s2))
-			p[i] = s2[j];
-		i++;
-	}
-	p[i] = '\0';
-	return (p);
-}
-
-char	*ft_substr(char *s, unsigned int start, size_t len)
-{
-	size_t	i;
-	char	*p;
-
-	if (!s)
-		return (0);
-	if (start >= ft_strlen(s))
-		return (ft_calloc(1, 1));
-	if (len > ft_strlen(s))
-		len = ft_strlen(s);
-	p = (char *)malloc(len + 1);
-	if (!p)
-		return (NULL);
-	i = 0;
-	while (s[i + start] && i < len)
-	{
-		p[i] = s[start + i];
-		i++;
-	}
-	p[i] = '\0';
-	return (p);
-}
 
 char *ft_get_environment(char *splitted_str, char **env)
 {
@@ -269,7 +80,7 @@ char **ft_search_in_splitted_str(char **splitted_str, char **env)
 	return splitted_str;
 }
 
-char *ft_convert_2d_to_str(char **splited_string)
+char *ft_convert_2d_to_str_and_separate(char **splited_string)
 {
 	int y;
 	char *str;
@@ -329,7 +140,7 @@ char	*fill_word_for_str(char *str)
 	return (s1);
 }
 
-char	**ft_split_with_special_chars(char *str)
+char	**ft_split_with_special_char(char *str)
 {
 	int		i;
 	char	**split;
@@ -338,7 +149,6 @@ char	**ft_split_with_special_chars(char *str)
 	i = 0;
 	count = ft_count_word_for_str(str);
 	split = malloc(sizeof(char *) * (count + 1));
-	printf("count %d\n", count);
 	while (*str && i < count)
 	{
 		while (*str == '#')
@@ -352,7 +162,34 @@ char	**ft_split_with_special_chars(char *str)
 	return (split);
 }
 
-/*           HANDLE SPLIT WITH | < > << >>            */
+char *handling_pipe(char *str)
+{
+	char *first_part_splitted;
+	char *seconde_part_splitted;
+	char *final_splitted_str;
+	int i;
+	int index;
+
+	i = 0;
+	index = 0;
+	first_part_splitted = ft_calloc(1, 1);
+	seconde_part_splitted = ft_calloc(1, 1);
+	final_splitted_str = ft_calloc(1, 1);
+	while(str[i])
+	{
+		if(str[i] == '|')
+		{
+			index = i;
+			first_part_splitted = ft_substr(str, 0, i);
+			seconde_part_splitted = ft_substr(str, i + 1 , ft_strlen(str) - i);
+			str[i] = '#';
+		}
+		i++;
+	}
+	final_splitted_str = ft_strjoin(first_part_splitted, "|#");
+	final_splitted_str = ft_strjoin(final_splitted_str, seconde_part_splitted);
+	return(final_splitted_str);
+}
 
 int main(int ac, char **av, char **env)
 {
@@ -362,13 +199,14 @@ int main(int ac, char **av, char **env)
     char **splited_string;
     char *splited_str;
 	int count;
+	int counter;
 	int i;
 	int j;
 
     i = 0;
     j = 0;
 	count = 0;	
-    input = readline("> ");
+    input = readline("\033[1;33mminishell> \033[0m");
 	count = ft_count_word(input);
     //add_history(input);
     splited_string = ft_split(input);
@@ -378,10 +216,13 @@ int main(int ac, char **av, char **env)
         printf("-- %s\n", splited_string[i]);
         i++;
     }
-	splited_str = ft_convert_2d_to_str(splited_string);
-    printf("-- %s\n", splited_str);
-	splited_string = ft_split_with_special_chars(splited_str);
-	while(j < count)
+	splited_str = ft_convert_2d_to_str_and_separate(splited_string);
+	splited_str = handling_pipe(splited_str);
+    printf("\n-- %s\n\n", splited_str);
+	counter = ft_count_word_for_str(splited_str);
+	printf("counter = %d\n", counter);
+	splited_string = ft_split_with_special_char(splited_str);
+	while(j < counter)
     {
         printf("-- %s\n", splited_string[j]);
         j++;

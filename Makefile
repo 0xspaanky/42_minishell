@@ -2,7 +2,13 @@ NAME = minishell
 CFLAGS = -Wall -Wextra -Werror
 CC = cc 
 
-SRC = minishell.c 
+SRC =	Libft/ft_split.c \
+		Libft/ft_strlen.c \
+		Libft/ft_substr.c \
+		Libft/ft_strjoin.c \
+		Libft/ft_calloc.c \
+		minishell.c \
+
 
 OBJS = $(SRC:.c=.o)
 
