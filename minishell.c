@@ -6,7 +6,7 @@
 /*   By: smounafi <smounafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/18 18:02:04 by smounafi          #+#    #+#             */
-/*   Updated: 2023/02/26 17:20:16 by smounafi         ###   ########.fr       */
+/*   Updated: 2023/02/27 17:33:23 by smounafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ char *ft_get_environment(char *splitted_str, char **env)
     return(envirement);
 }
 
-char **ft_search_in_splitted_str(char **splitted_str, char **env)
+char **ft_replace_var_with_env_value(char **splitted_str, char **env)
 {
 	int x;
 	int y;
@@ -140,7 +140,7 @@ char	*fill_word_for_str(char *str)
 	return (s1);
 }
 
-char	**ft_split_with_special_char(char *str)
+char	**ft_split_with_hashtag(char *str)
 {
 	int		i;
 	char	**split;
@@ -162,34 +162,69 @@ char	**ft_split_with_special_char(char *str)
 	return (split);
 }
 
-char *handling_pipe(char *str)
+char *separate_special_chars(char *str, char split_with)
 {
-	char *first_part_splitted;
-	char *seconde_part_splitted;
-	char *final_splitted_str;
+	char **splitted;
+	char *hold_char;
+	char *ret;
 	int i;
-	int index;
 
 	i = 0;
-	index = 0;
-	first_part_splitted = ft_calloc(1, 1);
-	seconde_part_splitted = ft_calloc(1, 1);
-	final_splitted_str = ft_calloc(1, 1);
-	while(str[i])
+	ret = ft_calloc(1,1);
+	hold_char = malloc(2);
+	hold_char[0] = split_with;
+	hold_char[1] = '\0';
+	splitted = ft_split_wid_char(str, split_with);
+	while(splitted[i])
 	{
-		if(str[i] == '|')
+		if(splitted[i + 1])
 		{
-			index = i;
-			first_part_splitted = ft_substr(str, 0, i);
-			seconde_part_splitted = ft_substr(str, i + 1 , ft_strlen(str) - i);
-			str[i] = '#';
+			ret = ft_strjoin(ret, splitted[i]);
+			ret = ft_strjoin(ret, "#");
+			i++;
+			ret = ft_strjoin(ret, hold_char);
+			splitted[i] = ft_strjoin("#", splitted[i]);
+			ret = ft_strjoin(ret, splitted[i]);
 		}
-		i++;
+		else if(splitted[i + 1] == NULL)
+		{
+			ret = ft_strjoin("#", hold_char);
+			splitted[i] = ft_strjoin("#", splitted[i]);
+			ret = ft_strjoin(ret, splitted[i]);
+		}
+		i++;	
 	}
-	final_splitted_str = ft_strjoin(first_part_splitted, "|#");
-	final_splitted_str = ft_strjoin(final_splitted_str, seconde_part_splitted);
-	return(final_splitted_str);
+	return(ret);
 }
+
+char **handling_special_chars(char **splitted_string)
+{
+	int x;
+	int y;
+	int index;
+	char split_with;
+
+	x = 0;
+	y = 0;
+	index = 0;
+	while(splitted_string[y])
+	{
+		x = 0;
+		while(splitted_string[y][x])
+		{
+			if(splitted_string[y][x] == '>' || splitted_string[y][x] == '<' || splitted_string[y][x] == '|')
+			{
+				split_with = splitted_string[y][x];
+				splitted_string[y] = separate_special_chars(splitted_string[y], split_with);
+				break;
+			}
+			x++;
+		}
+		y++;
+	}
+	return(splitted_string);
+}
+
 
 int main(int ac, char **av, char **env)
 {
@@ -210,18 +245,11 @@ int main(int ac, char **av, char **env)
 	count = ft_count_word(input);
     //add_history(input);
     splited_string = ft_split(input);
-    splited_string = ft_search_in_splitted_str(splited_string, env);
-    while(i < count)
-    {
-        printf("-- %s\n", splited_string[i]);
-        i++;
-    }
+    splited_string = ft_replace_var_with_env_value(splited_string, env);
+	splited_string = handling_special_chars(splited_string);
 	splited_str = ft_convert_2d_to_str_and_separate(splited_string);
-	splited_str = handling_pipe(splited_str);
-    printf("\n-- %s\n\n", splited_str);
+	splited_string = ft_split_with_hashtag(splited_str);
 	counter = ft_count_word_for_str(splited_str);
-	printf("counter = %d\n", counter);
-	splited_string = ft_split_with_special_char(splited_str);
 	while(j < counter)
     {
         printf("-- %s\n", splited_string[j]);

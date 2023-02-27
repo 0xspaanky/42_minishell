@@ -8,6 +8,7 @@ SRC =	Libft/ft_split.c \
 		Libft/ft_strjoin.c \
 		Libft/ft_calloc.c \
 		minishell.c \
+		Libft/ft_split_wid_char.c \
 
 
 OBJS = $(SRC:.c=.o)
