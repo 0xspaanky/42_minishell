@@ -6,7 +6,7 @@
 /*   By: smounafi <smounafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/18 18:02:04 by smounafi          #+#    #+#             */
-/*   Updated: 2023/02/27 17:33:23 by smounafi         ###   ########.fr       */
+/*   Updated: 2023/02/28 18:10:40 by smounafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,15 @@
 
 char *ft_get_environment(char *splitted_str, char **env)
 {
-	char *envirement;
+	char *environment;
     int i;
-    int count;
     int j;
+    int count;
 
+    i = 0;
     j = 0;
     count = 0;
-    i = 0;
-    envirement = ft_calloc(1,1);
+    environment = ft_calloc(1,1);
     while (env[i])
     {
         j = 0;
@@ -35,7 +35,7 @@ char *ft_get_environment(char *splitted_str, char **env)
         } 
         if (env[i][j] == '=')
         {
-            envirement = ft_strjoin(envirement, (env[i] + j + 1));
+            environment = ft_strjoin(environment, (env[i] + j + 1));
             count = 1;
             break ;
         }
@@ -43,15 +43,21 @@ char *ft_get_environment(char *splitted_str, char **env)
     }
     if (count == 0)
         return ("\0");
-    return(envirement);
+    return(environment);
 }
 
 char **ft_replace_var_with_env_value(char **splitted_str, char **env)
 {
 	int x;
 	int y;
-
+	int z;
+	int w;
+	char *hold_str;
+	
 	y = 0;
+	z = 0;
+	w = 1; // to escape the seconde $ in the str
+	hold_str = ft_calloc(1,1);
 	while(splitted_str[y])
 	{
 		x = 0;
@@ -62,16 +68,20 @@ char **ft_replace_var_with_env_value(char **splitted_str, char **env)
 				x++;
 				if(x == 1)
 				{
-					// printf("STR 1 = %s\n",splitted_str[y]);
-					// printf("ENV 1 = %s\n", get_environment(splitted_str[y] + x, env));
-					splitted_str[y] = ft_get_environment(splitted_str[y] + x, env);
+					hold_str = ft_get_environment(splitted_str[y] + x, env);
+					while(splitted_str[y][w])
+					{	
+						if(splitted_str[y][w] == '$')
+						{
+							z++;
+							break ;
+						}
+						w++;
+					}
 				}
-				else if(x > 1)
-				{
-					// printf("STR 2 = %s\n",splitted_str[y]);
-					// printf("ENV 2 = %s\n", get_environment(splitted_str[y], env));
-				 	splitted_str[y] = ft_strjoin(ft_substr(splitted_str[y], 0, x - 1), ft_get_environment(splitted_str[y] + x - 1, env));
-				}
+				if(z == 1)
+				 	hold_str = ft_strjoin(hold_str, ft_get_environment(splitted_str[y] + w + 1, env));
+				splitted_str[y] = hold_str;
 			}
 			x++;
 		}
@@ -201,12 +211,10 @@ char **handling_special_chars(char **splitted_string)
 {
 	int x;
 	int y;
-	int index;
 	char split_with;
 
 	x = 0;
 	y = 0;
-	index = 0;
 	while(splitted_string[y])
 	{
 		x = 0;
@@ -225,6 +233,30 @@ char **handling_special_chars(char **splitted_string)
 	return(splitted_string);
 }
 
+void hold_commands(char **splitted_string)
+{
+	int y;
+	int x;
+	t_shell shellcmd;
+	
+	y = 0;
+	while(splitted_string[y])
+	{
+		x = 0;
+		while(splitted_string[y][x])
+		{
+			if(splitted_string[y][x] == '|')
+			{
+				printf("str = %s\n", splitted_string[y]);
+				shellcmd.cmd = ft_substr(splitted_string[y], 0, x - 1);
+				printf("%s\n", shellcmd.cmd);
+				break;
+			}
+			x++;
+		}
+		y++;
+	}	
+}
 
 int main(int ac, char **av, char **env)
 {
@@ -237,10 +269,12 @@ int main(int ac, char **av, char **env)
 	int counter;
 	int i;
 	int j;
+	t_shell *shellcmd;
 
     i = 0;
     j = 0;
 	count = 0;	
+	shellcmd = NULL;
     input = readline("\033[1;33mminishell> \033[0m");
 	count = ft_count_word(input);
     //add_history(input);
@@ -248,8 +282,8 @@ int main(int ac, char **av, char **env)
     splited_string = ft_replace_var_with_env_value(splited_string, env);
 	splited_string = handling_special_chars(splited_string);
 	splited_str = ft_convert_2d_to_str_and_separate(splited_string);
-	splited_string = ft_split_with_hashtag(splited_str);
 	counter = ft_count_word_for_str(splited_str);
+	splited_string = ft_split_with_hashtag(splited_str);
 	while(j < counter)
     {
         printf("-- %s\n", splited_string[j]);
@@ -258,32 +292,3 @@ int main(int ac, char **av, char **env)
     free(input);
     return 0;
 }
-
-
-
-
-
-
-
-
-
-// int pipe_index;
-// int left_redir_index;
-// int right_redir_index;
-// int left_herdoc_index;
-// int right_herdoc_index;
-// pipe_index = 0;
-// left_redir_index = 0;
-// right_redir_index = 0;
-// left_herdoc_index = 0;
-// right_herdoc_index = 0;
-// if(str[i] == '|')
-// 	pipe_index = i;
-// if(str[i] == '<')
-// 	left_redir_index = i;
-// if(str[i] == '>')
-// 	right_redir_index = i;
-// if(str[i] == '<<')
-// 	left_herdoc_index = i;
-// if(str[i] == '>>')
-// 	right_herdoc_index = i;

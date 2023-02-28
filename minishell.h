@@ -6,7 +6,7 @@
 /*   By: smounafi <smounafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/18 18:02:07 by smounafi          #+#    #+#             */
-/*   Updated: 2023/02/27 14:59:37 by smounafi         ###   ########.fr       */
+/*   Updated: 2023/02/28 13:38:01 by smounafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,17 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-// typedef struct s_tok_pos
-// {
-//     int pipe_index;
-// 	int left_redir_index;
-// 	int right_redir_index;
-// }
+typedef struct shell
+{
+    char    *cmd;
+    struct  shell *nextcmd;
+}   t_shell;
+
+typedef struct data
+{
+    char    *content;
+    struct  data *next;
+}   t_data;
 
 char	**ft_split(char *dst);
 void	*ft_calloc(size_t count, size_t size);
