@@ -18,7 +18,7 @@ RM = rm -f
 all : $(NAME)
 
 $(NAME) : $(OBJS) 
-		$(CC) -lreadline $(CFLAGS) $(OBJS) -o $(NAME)
+		$(CC) -lreadline -fsanitize=address $(CFLAGS) $(OBJS) -o $(NAME)
 clean :
 	$(RM) $(OBJS)
 

@@ -6,7 +6,7 @@
 /*   By: smounafi <smounafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/18 18:02:04 by smounafi          #+#    #+#             */
-/*   Updated: 2023/02/28 18:10:40 by smounafi         ###   ########.fr       */
+/*   Updated: 2023/03/02 16:39:53 by smounafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ char *ft_get_environment(char *splitted_str, char **env)
     j = 0;
     count = 0;
     environment = ft_calloc(1,1);
+	//printf("str = %s\n", splitted_str);
     while (env[i])
     {
         j = 0;
@@ -37,7 +38,7 @@ char *ft_get_environment(char *splitted_str, char **env)
         {
             environment = ft_strjoin(environment, (env[i] + j + 1));
             count = 1;
-            break ;
+            //break ;
         }
         i++;
     }
@@ -48,43 +49,32 @@ char *ft_get_environment(char *splitted_str, char **env)
 
 char **ft_replace_var_with_env_value(char **splitted_str, char **env)
 {
+	char *hold_str;
 	int x;
 	int y;
 	int z;
-	int w;
-	char *hold_str;
 	
 	y = 0;
-	z = 0;
-	w = 1; // to escape the seconde $ in the str
 	hold_str = ft_calloc(1,1);
 	while(splitted_str[y])
 	{
 		x = 0;
+		z = 0;
 		while(splitted_str[y][x])
 		{
 			if(splitted_str[y][x] == '$')
 			{
 				x++;
-				if(x == 1)
-				{
-					hold_str = ft_get_environment(splitted_str[y] + x, env);
-					while(splitted_str[y][w])
-					{	
-						if(splitted_str[y][w] == '$')
-						{
-							z++;
-							break ;
-						}
-						w++;
-					}
-				}
+				z++;
 				if(z == 1)
-				 	hold_str = ft_strjoin(hold_str, ft_get_environment(splitted_str[y] + w + 1, env));
-				splitted_str[y] = hold_str;
+					hold_str = ft_get_environment(splitted_str[y] + x, env);
+				if(z > 1)
+					hold_str = ft_strjoin(hold_str, ft_get_environment(splitted_str[y] + x, env));
 			}
 			x++;
 		}
+		if(z)
+			splitted_str[y] = hold_str;
 		y++;
 	}
 	return splitted_str;
@@ -262,33 +252,32 @@ int main(int ac, char **av, char **env)
 {
 	(void)ac;
 	(void)av;
+	(void)env;
     char *input;
     char **splited_string;
     char *splited_str;
-	int count;
 	int counter;
 	int i;
-	int j;
 	t_shell *shellcmd;
 
     i = 0;
-    j = 0;
-	count = 0;	
 	shellcmd = NULL;
-    input = readline("\033[1;33mminishell> \033[0m");
-	count = ft_count_word(input);
-    //add_history(input);
-    splited_string = ft_split(input);
-    splited_string = ft_replace_var_with_env_value(splited_string, env);
-	splited_string = handling_special_chars(splited_string);
-	splited_str = ft_convert_2d_to_str_and_separate(splited_string);
-	counter = ft_count_word_for_str(splited_str);
-	splited_string = ft_split_with_hashtag(splited_str);
-	while(j < counter)
-    {
-        printf("-- %s\n", splited_string[j]);
-        j++;
-    }
+	input = readline("\033[1;33mminishell> \033[0m");
+    // while(() != NULL)
+	// {
+    	add_history(input);
+		splited_string = ft_split(input);
+		splited_string = ft_replace_var_with_env_value(splited_string, env);
+		splited_string = handling_special_chars(splited_string);
+		splited_str = ft_convert_2d_to_str_and_separate(splited_string);
+		counter = ft_count_word_for_str(splited_str);
+		splited_string = ft_split_with_hashtag(splited_str);
+		while(i < counter)
+		{
+			printf("-- %s\n", splited_string[i]);
+			i++;
+		}
+	// }
     free(input);
     return 0;
 }
