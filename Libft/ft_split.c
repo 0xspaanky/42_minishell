@@ -6,7 +6,7 @@
 /*   By: smounafi <smounafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/21 21:54:59 by smounafi          #+#    #+#             */
-/*   Updated: 2023/03/02 16:41:30 by smounafi         ###   ########.fr       */
+/*   Updated: 2023/03/02 17:32:16 by smounafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,6 @@ char	*fill_word(char *str)
 
 char *skip_single_double_quotes(char *str)
 {
-	
 	str++;
 	while(*str != 34 && *str != 39)
 		str++;

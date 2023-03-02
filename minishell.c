@@ -6,7 +6,7 @@
 /*   By: smounafi <smounafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/18 18:02:04 by smounafi          #+#    #+#             */
-/*   Updated: 2023/03/02 16:39:53 by smounafi         ###   ########.fr       */
+/*   Updated: 2023/03/02 23:03:09 by smounafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 char *ft_get_environment(char *splitted_str, char **env)
 {
+	
 	char *environment;
     int i;
     int j;
@@ -23,7 +24,6 @@ char *ft_get_environment(char *splitted_str, char **env)
     j = 0;
     count = 0;
     environment = ft_calloc(1,1);
-	//printf("str = %s\n", splitted_str);
     while (env[i])
     {
         j = 0;
@@ -33,12 +33,13 @@ char *ft_get_environment(char *splitted_str, char **env)
                 j++;
             else
                 break ;
-        } 
+        }
         if (env[i][j] == '=')
         {
             environment = ft_strjoin(environment, (env[i] + j + 1));
+			if (splitted_str[j] == '$')
+				environment = ft_strjoin(environment, ft_get_environment(splitted_str + j + 1, env));
             count = 1;
-            //break ;
         }
         i++;
     }
@@ -53,28 +54,27 @@ char **ft_replace_var_with_env_value(char **splitted_str, char **env)
 	int x;
 	int y;
 	int z;
-	
+
 	y = 0;
+	z = 0;
 	hold_str = ft_calloc(1,1);
 	while(splitted_str[y])
 	{
 		x = 0;
-		z = 0;
+		
 		while(splitted_str[y][x])
 		{
 			if(splitted_str[y][x] == '$')
 			{
 				x++;
 				z++;
-				if(z == 1)
-					hold_str = ft_get_environment(splitted_str[y] + x, env);
-				if(z > 1)
-					hold_str = ft_strjoin(hold_str, ft_get_environment(splitted_str[y] + x, env));
+				if(x == 1)
+					splitted_str[y] = ft_get_environment(splitted_str[y] + x, env);
+				else if(x > 1)
+					splitted_str[y] = ft_strjoin(ft_substr(splitted_str[y], 0, x - 1), ft_get_environment(splitted_str[y] + x, env));
 			}
 			x++;
 		}
-		if(z)
-			splitted_str[y] = hold_str;
 		y++;
 	}
 	return splitted_str;
