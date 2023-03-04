@@ -6,7 +6,7 @@
 /*   By: smounafi <smounafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/21 21:54:59 by smounafi          #+#    #+#             */
-/*   Updated: 2023/03/02 17:32:16 by smounafi         ###   ########.fr       */
+/*   Updated: 2023/03/04 23:20:34 by smounafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,15 +133,14 @@ char	*fill_word(char *str)
 
 char *skip_single_double_quotes(char *str)
 {
-	str++;
 	while(*str != 34 && *str != 39)
 		str++;
 	str++;
-	if (*str != ' ')
-	{
-		while(*str != ' ')
-			str++;
-	}
+	// if (*str != ' ')
+	// {
+	// 	while(*str != 34 && *str != 39)
+	// 		str++;
+	// }
 	return(str);
 }
 
@@ -150,21 +149,25 @@ char	**ft_split(char *str)
 	int		i;
 	char	**split;
 	int		count;
-
+	int x;
+	
 	i = 0;
+	x = 0;
 	count = ft_count_word(str);
 	split = malloc((sizeof(char *) * (count + 1)));
 	while (*str && i < count)
-	{
-		while (*str == ' ' || *str == '\t' || *str == '\n')
+	{//HANDDLE string before quotes like and have space inside         yes"hello there"
+		while (*str && (*str == ' ' || *str == '\t' || *str == '\n'))
 			str++;
 		split[i] = fill_word(str);
 		i++;
 		if(*str == 34 || *str == 39)
+		{
+			str++;
 			str = skip_single_double_quotes(str);
-		else
-			while (*str != ' ' && *str != '\t' && *str != '\n')
-				str++;
+		}
+		while (*str && ( *str != ' ' && *str != '\t' && *str != '\n'))
+			str++;
 	}
 	split[i] = 0;
 	return (split);

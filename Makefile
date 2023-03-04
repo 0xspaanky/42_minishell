@@ -7,6 +7,9 @@ SRC =	Libft/ft_split.c \
 		Libft/ft_substr.c \
 		Libft/ft_strjoin.c \
 		Libft/ft_calloc.c \
+		Libft/ft_lstnew.c \
+		Libft/ft_lstadd_front.c \
+		Libft/ft_lstadd_back.c \
 		minishell.c \
 		Libft/ft_split_wid_char.c \
 

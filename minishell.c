@@ -6,7 +6,7 @@
 /*   By: smounafi <smounafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/18 18:02:04 by smounafi          #+#    #+#             */
-/*   Updated: 2023/03/02 23:03:09 by smounafi         ###   ########.fr       */
+/*   Updated: 2023/03/04 23:45:28 by smounafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,17 +164,25 @@ char	**ft_split_with_hashtag(char *str)
 
 char *separate_special_chars(char *str, char split_with)
 {
-	char **splitted;
+	char **splitted = NULL;
 	char *hold_char;
 	char *ret;
 	int i;
-
+	
 	i = 0;
 	ret = ft_calloc(1,1);
 	hold_char = malloc(2);
 	hold_char[0] = split_with;
 	hold_char[1] = '\0';
-	splitted = ft_split_wid_char(str, split_with);
+	if(str[1] != 0)
+		splitted = ft_split_wid_char(str, split_with);
+	else
+	{
+		splitted = malloc(sizeof(char *) * 2);
+		splitted[0] = malloc(sizeof(char));
+		splitted[0][0] = '\0';
+		splitted[1] = 0;
+	}
 	while(splitted[i])
 	{
 		if(splitted[i + 1])
@@ -223,25 +231,34 @@ char **handling_special_chars(char **splitted_string)
 	return(splitted_string);
 }
 
+void split_to_stock_cmd(char **splitted_string, t_shell *shellcmds)
+{
+	char *holder;
+	char **finale_holder;
+	int i;
+
+	i = 0;
+	holder = ft_convert_2d_to_str_and_separate(splitted_string);
+	shellcmds = malloc(sizeof(struct t_shell));
+	while(holder[i] != '|'  && holder[i])
+		i++;
+	finale_holder = ft_split_wid_char(ft_substr(holder, 0, i), '#');
+	shellcmds = ft_lstnew(finale_holder);
+}
+
 void hold_commands(char **splitted_string)
 {
 	int y;
 	int x;
-	t_shell shellcmd;
-	
+
 	y = 0;
+	
 	while(splitted_string[y])
 	{
 		x = 0;
 		while(splitted_string[y][x])
 		{
-			if(splitted_string[y][x] == '|')
-			{
-				printf("str = %s\n", splitted_string[y]);
-				shellcmd.cmd = ft_substr(splitted_string[y], 0, x - 1);
-				printf("%s\n", shellcmd.cmd);
-				break;
-			}
+			
 			x++;
 		}
 		y++;
@@ -252,31 +269,33 @@ int main(int ac, char **av, char **env)
 {
 	(void)ac;
 	(void)av;
-	(void)env;
+
     char *input;
     char **splited_string;
     char *splited_str;
 	int counter;
 	int i;
-	t_shell *shellcmd;
+	t_shell *shellcmds;
 
     i = 0;
-	shellcmd = NULL;
+	shellcmds = NULL;
 	input = readline("\033[1;33mminishell> \033[0m");
     // while(() != NULL)
 	// {
     	add_history(input);
 		splited_string = ft_split(input);
 		splited_string = ft_replace_var_with_env_value(splited_string, env);
+	
 		splited_string = handling_special_chars(splited_string);
+		//printf("str = %s\n", splited_string);	
+
 		splited_str = ft_convert_2d_to_str_and_separate(splited_string);
+	
 		counter = ft_count_word_for_str(splited_str);
 		splited_string = ft_split_with_hashtag(splited_str);
-		while(i < counter)
-		{
-			printf("-- %s\n", splited_string[i]);
-			i++;
-		}
+		hold_commands(splited_string);
+		split_to_stock_cmd(splited_string, shellcmds);
+	
 	// }
     free(input);
     return 0;
