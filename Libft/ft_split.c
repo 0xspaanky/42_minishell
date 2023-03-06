@@ -6,7 +6,7 @@
 /*   By: smounafi <smounafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/21 21:54:59 by smounafi          #+#    #+#             */
-/*   Updated: 2023/03/04 23:20:34 by smounafi         ###   ########.fr       */
+/*   Updated: 2023/03/06 20:01:58 by smounafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,11 +136,11 @@ char *skip_single_double_quotes(char *str)
 	while(*str != 34 && *str != 39)
 		str++;
 	str++;
-	// if (*str != ' ')
-	// {
-	// 	while(*str != 34 && *str != 39)
-	// 		str++;
-	// }
+	if (*str != ' ')
+	{
+		while(*str != 34 && *str != 39)
+			str++;
+	}
 	return(str);
 }
 
