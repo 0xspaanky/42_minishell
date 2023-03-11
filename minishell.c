@@ -6,7 +6,7 @@
 /*   By: smounafi <smounafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/18 18:02:04 by smounafi          #+#    #+#             */
-/*   Updated: 2023/03/06 21:59:59 by smounafi         ###   ########.fr       */
+/*   Updated: 2023/03/11 13:09:35 by smounafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,11 @@ char **ft_replace_var_with_env_value(char **splitted_str, char **env)
 	while(splitted_str[y])
 	{
 		x = 0;
-		
 		while(splitted_str[y][x])
 		{
 			if(splitted_str[y][x] == '$')
 			{
 				x++;
-				z++;
 				if(x == 1)
 					splitted_str[y] = ft_get_environment(splitted_str[y] + x, env);
 				else if(x > 1)
@@ -82,11 +80,11 @@ char **ft_replace_var_with_env_value(char **splitted_str, char **env)
 
 char *ft_convert_2d_to_str_and_separate(char **splited_string)
 {
-	int y;
 	char *str;
+	int y;
 
-	y = 0;
 	str = ft_calloc(1,1);
+	y = 0;
 	while(splited_string[y])
 	{
 		str = ft_strjoin(str, splited_string[y]);
@@ -231,21 +229,22 @@ char **handling_special_chars(char **splitted_string)
 	return(splitted_string);
 }
 
-void split_to_stock_cmd(char **splitted_string, t_shell *shellcmds)
+void split_to_stock_cmd(char **splitted_string, t_shell **shellcmds)
 {
 	char *holder;
 	char **finale_holder;
+	t_shell *new;
 	int i;
-	int magic;
+	int j;
 
-	magic = 0;
+	j = 0;
 	i = 0;
 	holder = ft_convert_2d_to_str_and_separate(splitted_string);
-	shellcmds = malloc(sizeof(struct t_shell));
 	while(holder[i] != '|'  && holder[i])
 		i++;
 	finale_holder = ft_split_wid_char(ft_substr(holder, 0, i), '#');
-	shellcmds = ft_lstnew(finale_holder);
+	new = ft_lstnew(finale_holder);
+	ft_lstadd_back(shellcmds, new);
 	holder = holder + ++i;
 	i = 0;
 	while(holder[i])
@@ -253,14 +252,16 @@ void split_to_stock_cmd(char **splitted_string, t_shell *shellcmds)
 		if(holder[i] == '|')
 		{
 			finale_holder = ft_split_wid_char(ft_substr(holder, 0, i - 1), '#');
-			ft_lstadd_back(&shellcmds, ft_lstnew(finale_holder));
+			new = ft_lstnew(finale_holder);
+			ft_lstadd_back(shellcmds, new);
 			i++;
-			magic = i;
+			j = i;
 		}
 		else if (holder[i + 1] == 0)
 		{
-			finale_holder = ft_split_wid_char(ft_substr(holder, magic, i - 1), '#');
-			ft_lstadd_back(&shellcmds, ft_lstnew(finale_holder));
+			finale_holder = ft_split_wid_char(ft_substr(holder, j, i - 1), '#');
+			new = ft_lstnew(finale_holder);
+			ft_lstadd_back(shellcmds, new);
 			i++;
 		}
 		i++;
@@ -270,33 +271,39 @@ void split_to_stock_cmd(char **splitted_string, t_shell *shellcmds)
 	// 	i = 0;
 	// 	while(shellcmds->cmd[i])
 	// 	{
-	// 		printf("%s\n", shellcmds->cmd[i]);
+	// 		printf("cmd = %s && idx = %d\n", shellcmds->cmd[i], i);
 	// 		i++;
 	// 	}
 	// 	shellcmds = shellcmds->nextcmd;
 	// }
 }
 
-// void extracting_files(t_shell *shellcmds)
-// {
-// 	int i;
-// 	int j;
-// 	i = 0;
-// 	j = 0;
-// 	while(shellcmds)
-// 	{
-// 		i = 0;
-// 		while(shellcmds->cmd[i])
-// 		{
-// 			while(shellcmds->cmd[i][j])
-// 			{
-// 				if(shellcmds->cmd[i][j] == '<' || shellcmds->cmd[i][j] = '>')
-// 			}
-// 			i++;
-// 		}
-// 		shellcmds = shellcmds->nextcmd;
-// 	}
-// }
+void extracting_files(t_shell *shellcmds, t_files *files)
+{
+	int i;
+	int j;
+	(void)files;
+
+	j = 0;
+	while(shellcmds)
+	{
+		i = 0;
+		while(shellcmds->cmd[i])
+		{
+			j = 0;
+			while(shellcmds->cmd[i][j])
+			{
+				if(shellcmds->cmd[i][j] == '<' || shellcmds->cmd[i][j] == '>')
+					printf("HERE\n");
+				else 
+					printf("NOT HERE\n");
+				j++;
+			}
+			i++;
+		}
+		shellcmds = shellcmds->nextcmd;
+	}
+}
 
 int main(int ac, char **av, char **env)
 {
@@ -309,26 +316,36 @@ int main(int ac, char **av, char **env)
 	int counter;
 	int i;
 	t_shell *shellcmds;
-
+	//t_shell *tmp;
+	t_files *files;
     i = 0;
 	shellcmds = NULL;
+	files = NULL;
 	input = readline("\033[1;33mminishell> \033[0m");
-    // while(() != NULL)
+	add_history(input);
+	splited_string = ft_split(input);
+	splited_string = ft_replace_var_with_env_value(splited_string, env);
+	splited_string = handling_special_chars(splited_string);
+	splited_str = ft_convert_2d_to_str_and_separate(splited_string);
+	counter = ft_count_word_for_str(splited_str);
+	splited_string = ft_split_with_hashtag(splited_str);
+	//tmp = *shellcmds;
+	split_to_stock_cmd(splited_string, &shellcmds);
+	while((shellcmds))
+	{
+		i = 0;
+		while((shellcmds)->cmd[i])
+		{
+			printf("cmd = %s && idx = %d\n", (shellcmds)->cmd[i], i);
+			i++;
+		}
+		(shellcmds) = (shellcmds)->nextcmd;
+	}
+	// extracting_files(shellcmds, files);
+	// while(i < counter)
 	// {
-    	add_history(input);
-		splited_string = ft_split(input);
-		splited_string = ft_replace_var_with_env_value(splited_string, env);
-		splited_string = handling_special_chars(splited_string);
-		splited_str = ft_convert_2d_to_str_and_separate(splited_string);
-		//printf("%s\n", splited_str);
-		counter = ft_count_word_for_str(splited_str);
-		splited_string = ft_split_with_hashtag(splited_str);
-		split_to_stock_cmd(splited_string, shellcmds);
-		// while(i < counter)
-		// {
-		// 	printf("%s\n", splited_string[i]);
-		// 	i++;
-		// }
+	// 		printf("%s\n", splited_string[i]);
+	// 		i++;
 	// }
     free(input);
     return 0;

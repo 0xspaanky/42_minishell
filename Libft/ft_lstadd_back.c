@@ -6,7 +6,7 @@
 /*   By: smounafi <smounafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/26 21:30:33 by smounafi          #+#    #+#             */
-/*   Updated: 2023/03/03 20:11:30 by smounafi         ###   ########.fr       */
+/*   Updated: 2023/03/11 12:52:56 by smounafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,15 +24,11 @@ t_shell	*ft_lstlast(t_shell *lst)
 void	ft_lstadd_back(t_shell **lst, t_shell *new)
 {
 	t_shell	*last_node;
-
-	if (new)
+	if (!*lst)
 	{
-		if (*lst)
-		{
-			last_node = ft_lstlast(*lst);
-			last_node->nextcmd = new;
-		}
-		else
-			*lst = new;
+		*lst = new;
+		return;
 	}
+	last_node = ft_lstlast(*lst);
+	last_node->nextcmd = new;
 }

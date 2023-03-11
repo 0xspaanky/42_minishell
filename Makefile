@@ -7,6 +7,7 @@ SRC =	Libft/ft_split.c \
 		Libft/ft_substr.c \
 		Libft/ft_strjoin.c \
 		Libft/ft_calloc.c \
+		Libft/ft_strdup.c \
 		Libft/ft_lstnew.c \
 		Libft/ft_lstadd_front.c \
 		Libft/ft_lstadd_back.c \
@@ -19,9 +20,9 @@ OBJS = $(SRC:.c=.o)
 RM = rm -f
 
 all : $(NAME)
-
+#-fsanitize=address
 $(NAME) : $(OBJS) 
-		$(CC) -lreadline -fsanitize=address $(CFLAGS) $(OBJS) -o $(NAME)
+		$(CC) -lreadline  $(CFLAGS) $(OBJS) -o $(NAME)
 clean :
 	$(RM) $(OBJS)
 
