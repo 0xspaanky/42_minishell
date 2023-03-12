@@ -6,7 +6,7 @@
 /*   By: smounafi <smounafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/18 18:02:07 by smounafi          #+#    #+#             */
-/*   Updated: 2023/03/10 21:28:03 by smounafi         ###   ########.fr       */
+/*   Updated: 2023/03/12 22:31:00 by smounafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,19 +19,11 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-typedef struct t_files
-{
-    char    *file_name;
-    struct t_files *next_file;
-    char    typefile;
-
-}   t_files;
-
 typedef struct t_shell
 {
     char **cmd;
+    char **files;
     struct t_shell *nextcmd;
-    t_files *files;
 
 }   t_shell;
 
@@ -40,6 +32,8 @@ void	*ft_calloc(size_t count, size_t size);
 char	*ft_strjoin(char *s1, char *s2);
 char	*ft_strdup(const char *s1);
 size_t	ft_strlen(const char *s);
+char	*ft_strtrim(char *s1, char *set);
+char	*ft_strchr(char *s, int c);
 char	*ft_substr(char *s, unsigned int start, size_t len);
 int     ft_count_word(char *str);
 char	**ft_split_wid_char(char *s, char c);

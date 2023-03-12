@@ -8,6 +8,8 @@ SRC =	Libft/ft_split.c \
 		Libft/ft_strjoin.c \
 		Libft/ft_calloc.c \
 		Libft/ft_strdup.c \
+		Libft/ft_strtrim.c \
+		Libft/ft_strchr.c \
 		Libft/ft_lstnew.c \
 		Libft/ft_lstadd_front.c \
 		Libft/ft_lstadd_back.c \

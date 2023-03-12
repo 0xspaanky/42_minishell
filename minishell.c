@@ -6,7 +6,7 @@
 /*   By: smounafi <smounafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/18 18:02:04 by smounafi          #+#    #+#             */
-/*   Updated: 2023/03/11 13:09:35 by smounafi         ###   ########.fr       */
+/*   Updated: 2023/03/12 23:10:17 by smounafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,14 +234,50 @@ void split_to_stock_cmd(char **splitted_string, t_shell **shellcmds)
 	char *holder;
 	char **finale_holder;
 	t_shell *new;
+	t_shell file;
+	char *str;
 	int i;
 	int j;
+	int k;
+	int n;
+	int l;
+	int index;
 
-	j = 0;
 	i = 0;
+	j = 0;
+	k = 0;
+	n = 0;
+	l = 0;
+	index = 0;
 	holder = ft_convert_2d_to_str_and_separate(splitted_string);
-	while(holder[i] != '|'  && holder[i])
+	while(holder[i] && holder[i] != '|')
+	{
+		if(holder[i] == '<' || holder[i] == '>')
+		{
+			if(holder[i] == '<')
+			{
+				index = i;
+				i += 2;
+				while(holder[i] != '#' && holder[i] != '|')
+				{
+					i++;
+					k++;
+				}
+				str = ft_substr(holder, index, k + 2);
+				file.files[n] = ft_strjoin(ft_substr(str, 0, k - index - 1), ft_substr(str, k - index, k));
+				printf("-- %s\n", file.files[1]);
+				// while(file.files[l])
+				// {
+				// 	printf("file name = %s\n", file.files[l]);
+				// 	l++;
+				// }
+			}
+			// else if()
+		}
 		i++;
+		n++;
+	}
+	i = 0;
 	finale_holder = ft_split_wid_char(ft_substr(holder, 0, i), '#');
 	new = ft_lstnew(finale_holder);
 	ft_lstadd_back(shellcmds, new);
@@ -266,25 +302,20 @@ void split_to_stock_cmd(char **splitted_string, t_shell **shellcmds)
 		}
 		i++;
 	}
-	// while(shellcmds)
-	// {
-	// 	i = 0;
-	// 	while(shellcmds->cmd[i])
-	// 	{
-	// 		printf("cmd = %s && idx = %d\n", shellcmds->cmd[i], i);
-	// 		i++;
-	// 	}
-	// 	shellcmds = shellcmds->nextcmd;
-	// }
 }
 
-void extracting_files(t_shell *shellcmds, t_files *files)
+void extracting_files(t_shell *shellcmds)
 {
 	int i;
 	int j;
-	(void)files;
-
+	int k;
+	char **cmd_holder;
+	char *cmd_str;
 	j = 0;
+	k = 0;
+	cmd_holder = ft_calloc(1, 1);
+	cmd_str = ft_convert_2d_to_str_and_separate(shellcmds->cmd);
+	printf("%s\n", cmd_str);
 	while(shellcmds)
 	{
 		i = 0;
@@ -294,9 +325,24 @@ void extracting_files(t_shell *shellcmds, t_files *files)
 			while(shellcmds->cmd[i][j])
 			{
 				if(shellcmds->cmd[i][j] == '<' || shellcmds->cmd[i][j] == '>')
-					printf("HERE\n");
-				else 
-					printf("NOT HERE\n");
+				{
+					if(shellcmds->cmd[i][j] == '<')
+					{
+						while(cmd_str[k] != shellcmds->cmd[i][j])
+							k++;
+						cmd_holder = ft_split_wid_char(ft_substr(cmd_str, 0, k - 1), '#');
+						k = 0;
+						while(cmd_holder[k])
+						{
+							printf("-- %s\n", cmd_holder[k]);
+							k++;
+						}
+					}
+					else if(shellcmds->cmd[i][j] == '>')
+					{
+						
+					}
+				}
 				j++;
 			}
 			i++;
@@ -316,11 +362,8 @@ int main(int ac, char **av, char **env)
 	int counter;
 	int i;
 	t_shell *shellcmds;
-	//t_shell *tmp;
-	t_files *files;
     i = 0;
 	shellcmds = NULL;
-	files = NULL;
 	input = readline("\033[1;33mminishell> \033[0m");
 	add_history(input);
 	splited_string = ft_split(input);
@@ -329,19 +372,18 @@ int main(int ac, char **av, char **env)
 	splited_str = ft_convert_2d_to_str_and_separate(splited_string);
 	counter = ft_count_word_for_str(splited_str);
 	splited_string = ft_split_with_hashtag(splited_str);
-	//tmp = *shellcmds;
 	split_to_stock_cmd(splited_string, &shellcmds);
-	while((shellcmds))
-	{
-		i = 0;
-		while((shellcmds)->cmd[i])
-		{
-			printf("cmd = %s && idx = %d\n", (shellcmds)->cmd[i], i);
-			i++;
-		}
-		(shellcmds) = (shellcmds)->nextcmd;
-	}
-	// extracting_files(shellcmds, files);
+	// extracting_files(shellcmds);
+	// while((shellcmds))
+	// {
+	// 	i = 0;
+	// 	while((shellcmds)->cmd[i])
+	// 	{
+	// 		printf("cmd = %s\n", (shellcmds)->cmd[i]);
+	// 		i++;
+	// 	}
+	// 	(shellcmds) = (shellcmds)->nextcmd;
+	// }
 	// while(i < counter)
 	// {
 	// 		printf("%s\n", splited_string[i]);
